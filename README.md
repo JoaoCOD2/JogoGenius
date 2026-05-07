@@ -36,5 +36,4 @@ Projeto feito para uma versão Web do Jogo Genius.
 
 ## ▶️ Como visualizar
 
-[- Acesse o Portfólio](https://joaocod2.github.io/PortfolioWeb/) <br />
-[- Acesse o Portfólio em Inglês](https://joaocod2.github.io/WebPortfolio/)
+Deploy não feito ainda.
