@@ -7,7 +7,7 @@
 
 Projeto feito para uma versão Web do Jogo Genius.
 
-## 🚀 Projeto teve como objetivo, desenvolver habilidades como:
+## 🚀 Projeto teve como objetivo desenvolver habilidades como:
 
 - HTML;
 - CSS;
