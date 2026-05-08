@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>GENIUS — Jogo de Memória</title>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600&display=swap"
+            rel="stylesheet" />
+        <link rel="stylesheet" href="css/style.css" />
+    </head>
+
+    <body>
+
+        <!-- ============================================================
+       ETAPA 1 — HTML: Estrutura visual do jogo
+  ============================================================ -->
+
+        <!-- Desafio 3: Tela de derrota bonita -->
+        <div class="defeat-overlay" id="defeat-overlay" role="dialog" aria-modal="true" aria-label="Tela de derrota">
+            <div class="defeat-particles" id="defeat-particles"></div>
+
+            <div class="defeat-content">
+                <div class="defeat-glitch" data-text="GAME OVER">GAME OVER</div>
+
+                <div class="defeat-stats">
+                    <div class="defeat-stat-block">
+                        <span class="defeat-stat-label">sua pontuação</span>
+                        <span class="defeat-score-value" id="defeat-score">0</span>
+                    </div>
+                    <div class="defeat-divider"></div>
+                    <div class="defeat-stat-block">
+                        <span class="defeat-stat-label">fase alcançada</span>
+                        <span class="defeat-phase-value" id="defeat-phase">1</span>
+                    </div>
+                </div>
+
+                <div class="defeat-record-box" id="defeat-record-box">
+                    <span id="defeat-record-msg">Recorde: 0 pontos</span>
+                </div>
+
+                <div class="defeat-sequence-replay" id="defeat-sequence-replay">
+                    <span class="defeat-stat-label">sequência correta era:</span>
+                    <div class="replay-dots" id="replay-dots"></div>
+                </div>
+
+                <!-- Desafio 4: Botão reiniciar -->
+                <div class="defeat-buttons">
+                    <button class="ctrl-btn primary large" onclick="startGame()">
+                        <span>▶</span> JOGAR NOVAMENTE
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="genius-app">
+
+            <!-- Cabeçalho com título -->
+            <header class="header">
+                <div class="title-wrapper">
+                    <h1 class="title">GE<span class="title-accent">N</span>IUS</h1>
+                    <div class="title-line"></div>
+                </div>
+                <p class="subtitle">Jogo de Memória</p>
+            </header>
+
+            <!-- Desafio 2: Sistema de pontuação | Desafio 5: Recorde (localStorage) -->
+            <div class="stats-bar" role="status" aria-live="polite">
+                <div class="stat">
+                    <div class="stat-icon">◈</div>
+                    <div class="stat-label">Pontuação</div>
+                    <div class="stat-value" id="score-display">0</div>
+                </div>
+                <div class="stat stat-center">
+                    <div class="stat-icon">◉</div>
+                    <div class="stat-label">Fase</div>
+                    <div class="stat-value phase-val" id="round-text">—</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-icon">★</div>
+                    <div class="stat-label">Recorde</div>
+                    <div class="stat-value record" id="record-display">0</div>
+                </div>
+            </div>
+
+            <!-- Área do tabuleiro com os 4 botões coloridos -->
+            <main class="board-wrapper">
+                <div class="board-glow" id="board-glow"></div>
+                <div class="board-container">
+
+                    <!-- Quatro botões coloridos (ETAPA 1 — estrutura) -->
+                    <button class="btn-pad top-left" id="btn-green" disabled aria-label="Verde">
+                        <div class="pad-inner"></div>
+                        <div class="pad-shine"></div>
+                    </button>
+
+                    <button class="btn-pad top-right" id="btn-red" disabled aria-label="Vermelho">
+                        <div class="pad-inner"></div>
+                        <div class="pad-shine"></div>
+                    </button>
+
+                    <button class="btn-pad bottom-left" id="btn-yellow" disabled aria-label="Amarelo">
+                        <div class="pad-inner"></div>
+                        <div class="pad-shine"></div>
+                    </button>
+
+                    <button class="btn-pad bottom-right" id="btn-blue" disabled aria-label="Azul">
+                        <div class="pad-inner"></div>
+                        <div class="pad-shine"></div>
+                    </button>
+
+                    <!-- Centro: logo + indicador de rodada -->
+                    <div class="center-hub" aria-hidden="true">
+                        <div class="hub-ring"></div>
+                        <div class="hub-content">
+                            <span class="hub-logo">GNS</span>
+                            <span class="hub-round" id="round-display">—</span>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Área de mensagens (ETAPA 1) -->
+            <section class="status-area">
+                <div class="message-box">
+                    <p class="message info" id="message" role="alert" aria-live="assertive">
+                        Pressione INICIAR para jogar
+                    </p>
+                </div>
+
+                <!-- Pontos visuais de progresso da sequência -->
+                <div class="score-dots" id="score-dots" aria-hidden="true"></div>
+
+                <!-- Dica de teclado -->
+                <div class="keyboard-hint" id="keyboard-hint" style="display:none">
+                    <span>Teclado: <kbd>G</kbd> <kbd>R</kbd> <kbd>Y</kbd> <kbd>B</kbd></span>
+                </div>
+            </section>
+
+            <!-- Botão iniciar (ETAPA 1) + Desafio 4: Botão reiniciar -->
+            <div class="controls">
+                <button class="ctrl-btn primary" id="start-btn" onclick="startGame()">
+                    <span class="btn-icon">▶</span> INICIAR
+                </button>
+                <button class="ctrl-btn secondary" id="restart-btn" onclick="startGame()" style="display:none">
+                    <span class="btn-icon">↺</span> REINICIAR
+                </button>
+            </div>
+
+            <!-- Rodapé com info de nível de dificuldade -->
+            <footer class="speed-indicator" id="speed-indicator" style="display:none">
+                <span class="speed-label">Velocidade</span>
+                <div class="speed-bar">
+                    <div class="speed-fill" id="speed-fill"></div>
+                </div>
+                <span class="speed-text" id="speed-text">Normal</span>
+            </footer>
+
+        </div><!-- .genius-app -->
+
+        <script src="js/script.js"></script>
+    </body>
+</html>
