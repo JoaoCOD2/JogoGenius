@@ -33,6 +33,15 @@ const SPEED_LEVELS = [
     { min: 21, max: 99, label: 'INSANO', speedPct: 98 },
 ];
 
+const DIFFICULTY_SETTINGS = {
+    easy:   { label: 'Fácil',  speedFactor: 1.25, showPreview: true,  previewViews: Infinity },
+    medium: { label: 'Médio',  speedFactor: 1.00, showPreview: true,  previewViews: 5 },
+    hard:   { label: 'Difícil', speedFactor: 0.65, showPreview: false, previewViews: 0 },
+};
+
+let currentDifficulty = 'medium';
+let sequenceViewsLeft = DIFFICULTY_SETTINGS[currentDifficulty].previewViews;
+
 /* ================================================================
    DESAFIO 1 — SONS PARA CADA COR (Web Audio API)
 ================================================================ */
@@ -174,6 +183,15 @@ function flashButton(cor, duracaoMs = 400) {
     });
 }
 
+function flashPlayerButton(cor, duracaoMs = 200) {
+    const btn = document.getElementById('btn-' + cor);
+    playTone(cor, duracaoMs);
+    btn.classList.add('active');
+    setTimeout(() => {
+        btn.classList.remove('active');
+    }, duracaoMs);
+}
+
 // Atualiza os pontos de progresso visuais na tela
 function atualizarPontos() {
     const container = document.getElementById('score-dots');
@@ -198,10 +216,90 @@ function atualizarVelocidade() {
 
 // Calcula a velocidade de exibição com base na rodada
 function calcularVelocidade() {
-    return {
-        flash: Math.max(180, 520 - round * 20),  // duração do flash
-        gap: Math.max(60, 300 - round * 12),  // intervalo entre flashes
+    const base = {
+        flash: Math.max(180, 520 - round * 20),
+        gap: Math.max(60, 300 - round * 12),
     };
+
+    let factor = DIFFICULTY_SETTINGS[currentDifficulty]?.speedFactor || 1;
+    if (currentDifficulty === 'medium' && round > 5) {
+        factor *= 0.82;
+    }
+
+    return {
+        flash: Math.round(base.flash * factor),
+        gap: Math.round(base.gap * factor),
+    };
+}
+
+function setDifficulty(mode) {
+    if (!DIFFICULTY_SETTINGS[mode]) return;
+
+    currentDifficulty = mode;
+    document.querySelectorAll('.difficulty-card').forEach(card => {
+        const selected = card.dataset.difficulty === mode;
+        card.classList.toggle('selected', selected);
+        card.setAttribute('aria-pressed', selected ? 'true' : 'false');
+    });
+
+    document.getElementById('difficulty-display').textContent = DIFFICULTY_SETTINGS[mode].label;
+    document.getElementById('difficulty-status').textContent = DIFFICULTY_SETTINGS[mode].label;
+    document.getElementById('medium-counter').style.display = mode === 'medium' ? 'block' : 'none';
+    updateVisualIndicators();
+}
+
+function updateMediumCounter() {
+    const counter = document.getElementById('sequence-views-left');
+    counter.textContent = sequenceViewsLeft;
+}
+
+function shouldShowVisualIndicators() {
+    return currentDifficulty === 'easy' || (currentDifficulty === 'medium' && round <= 5);
+}
+
+function updateVisualIndicators() {
+    const showIndicators = shouldShowVisualIndicators();
+    const scoreDots = document.getElementById('score-dots');
+    const preview = document.getElementById('sequence-preview');
+
+    scoreDots.style.display = showIndicators ? 'flex' : 'none';
+    preview.style.display = showIndicators ? 'flex' : 'none';
+    document.getElementById('medium-counter').style.display = currentDifficulty === 'medium' && showIndicators ? 'block' : 'none';
+
+    if (!showIndicators) {
+        scoreDots.innerHTML = '';
+        document.getElementById('preview-list').innerHTML = '';
+    }
+}
+
+function renderSequencePreview() {
+    const list = document.getElementById('preview-list');
+    list.innerHTML = '';
+
+    sequence.forEach((color, idx) => {
+        const dot = document.createElement('div');
+        dot.className = `preview-chip ${color}`;
+        dot.dataset.index = idx;
+        dot.title = COLOR_NAMES[color];
+        list.appendChild(dot);
+    });
+}
+
+function highlightPreviewIndex(index) {
+    document.querySelectorAll('.preview-chip').forEach(chip => {
+        chip.classList.toggle('active', Number(chip.dataset.index) === index);
+    });
+}
+
+function clearPreviewHighlight() {
+    document.querySelectorAll('.preview-chip').forEach(chip => {
+        chip.classList.remove('active');
+    });
+}
+
+function updatePreviewVisibility(show) {
+    const preview = document.getElementById('sequence-preview');
+    preview.style.display = show ? 'flex' : 'none';
 }
 
 /* ================================================================
@@ -217,6 +315,11 @@ function startGame() {
     round = 0;
     score = 0;
     gameActive = true;
+
+    sequenceViewsLeft = DIFFICULTY_SETTINGS[currentDifficulty].previewViews;
+    updateMediumCounter();
+    setDifficulty(currentDifficulty);
+    updateVisualIndicators();
 
     // Atualiza interface
     document.getElementById('score-display').textContent = 0;
@@ -253,6 +356,7 @@ async function proximaRodada() {
     document.getElementById('round-text').textContent = round;
     atualizarPontos();
     atualizarVelocidade();
+    updateVisualIndicators();
 
     // Mostra a sequência completa ao jogador
     await mostrarSequencia();
@@ -266,22 +370,46 @@ async function mostrarSequencia() {
     // Ativa pulso visual no hub central
     document.querySelector('.center-hub').classList.add('pulsing');
 
-    setMessage('Observe a sequência...', 'info');
-    await sleep(650);
+    const settings = DIFFICULTY_SETTINGS[currentDifficulty];
+    const showHelp = settings.showPreview && round <= 5 && (settings.previewViews === Infinity || sequenceViewsLeft > 0);
 
-    // Velocidade adapta-se à rodada (estrutura condicional implícita)
+    if (showHelp) {
+        renderSequencePreview();
+        document.getElementById('sequence-preview').style.display = 'flex';
+        if (currentDifficulty === 'medium') {
+            document.getElementById('medium-counter').style.display = 'block';
+        }
+        setMessage('Observe a sequência...' + (currentDifficulty === 'medium' ? ` (${sequenceViewsLeft} restantes)` : ''), 'info');
+        await sleep(650);
+    } else {
+        updatePreviewVisibility(false);
+        setMessage('', '');
+        await sleep(300);
+    }
+
     const { flash, gap } = calcularVelocidade();
-
-    // Lógica de repetição: percorre toda a sequência
     for (let i = 0; i < sequence.length; i++) {
+        if (showHelp) {
+            highlightPreviewIndex(i);
+        }
         await flashButton(sequence[i], flash);
         await sleep(gap);
     }
 
-    // Remove pulso e libera input do jogador
+    if (showHelp) {
+        clearPreviewHighlight();
+    }
+
+    if (currentDifficulty === 'medium' && showHelp && sequenceViewsLeft !== Infinity) {
+        sequenceViewsLeft = Math.max(0, sequenceViewsLeft - 1);
+        updateMediumCounter();
+        if (sequenceViewsLeft === 0) {
+            setMessage('', '');
+        }
+    }
+
     document.querySelector('.center-hub').classList.remove('pulsing');
-    await sleep(300);
-    setMessage('Repita a sequência! (' + sequence.length + ' cores)', '');
+    setMessage('', '');
     setButtons(true);
     accepting = true;
 }
@@ -290,9 +418,8 @@ async function mostrarSequencia() {
 function handleColorClick(cor) {
     if (!accepting || !gameActive) return;
 
-    // Feedback visual e sonoro imediato
-    playTone(cor, 200);
-    flashButton(cor, 200);
+    // Feedback visual e sonoro imediato do jogador
+    flashPlayerButton(cor, 200);
 
     // Adiciona ao array da sequência do jogador
     playerSeq.push(cor);
@@ -430,6 +557,10 @@ function criarParticulas() {
    EVENTOS DE CLIQUE — ETAPA 1 (botões coloridos)
    Cada botão chama handleColorClick com sua cor
 ================================================================ */
+document.querySelectorAll('.difficulty-card').forEach(card => {
+    card.addEventListener('click', () => setDifficulty(card.dataset.difficulty));
+});
+
 COLORS.forEach(cor => {
     document.getElementById('btn-' + cor).addEventListener('click', () => {
         handleColorClick(cor);
@@ -463,6 +594,8 @@ document.addEventListener('keydown', e => {
 ================================================================ */
 (function init() {
     document.getElementById('record-display').textContent = record;
+    setDifficulty(currentDifficulty);
+    updateMediumCounter();
 })();
 
 /* ================================================================

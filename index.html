@@ -43,11 +43,13 @@
                     <button class="modal-close" onclick="closeModal('howToPlayModal')">&times;</button>
                 </div>
                 <div class="modal-body">
+                    <p><strong>Objetivo:</strong> memorize a sequência de luzes e sons e repita cada rodada corretamente. A cada fase, o padrão aumenta e o jogo fica mais rápido.</p>
+                    <p><strong>Como ganhar pontos:</strong> cada rodada correta soma pontos extras e aumenta seu recorde. Quanto mais fases você chegar, maior será sua pontuação.</p>
                     <ol>
-                        <li><strong>Clique em "INICIAR"</strong> para começar a partida</li>
-                        <li><strong>Observe a sequência</strong> de cores que o jogo mostra</li>
-                        <li><strong>Repita a sequência</strong> clicando nos botões coloridos na mesma ordem</li>
-                        <li><strong>A cada rodada</strong>, uma nova cor é adicionada à sequência</li>
+                        <li><strong>Clique em "INICIAR"</strong> para começar a partida.</li>
+                        <li><strong>Observe a sequência</strong> exibida no modo escolhido.</li>
+                        <li><strong>Repita a sequência</strong> clicando nos botões coloridos na mesma ordem.</li>
+                        <li><strong>A cada rodada</strong>, uma nova cor é adicionada à sequência.</li>
                         <li><strong>Atalhos de teclado:</strong>
                             <ul>
                                 <li><kbd>G</kbd> para Verde</li>
@@ -57,10 +59,18 @@
                                 <li><kbd>Espaço</kbd> para iniciar</li>
                             </ul>
                         </li>
-                        <li><strong>Quanto mais fases</strong> você avança, mais rápido fica o jogo</li>
-                        <li><strong>Errando</strong> uma cor, o jogo termina</li>
+                        <li><strong>Quanto mais fases</strong> você avança, mais rápido fica o jogo.</li>
+                        <li><strong>Errando</strong> uma cor, o jogo termina.</li>
                         <li><strong>Acumule pontos</strong> e tente bater recordes!</li>
                     </ol>
+                    <div class="modal-subsection">
+                        <h3>Modos de dificuldade</h3>
+                        <ul>
+                            <li><strong>Fácil</strong> — a sequência fica visível no painel o tempo todo. Ideal para iniciantes.</li>
+                            <li><strong>Médio</strong> — você pode visualizar a sequência completa apenas 5 vezes por partida. Use as visualizações com cuidado.</li>
+                            <li><strong>Difícil</strong> — não há ajuda visual da sequência. Você deve memorizar apenas pelos flashes dos botões.</li>
+                        </ul>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button class="modal-btn-close" onclick="closeModal('howToPlayModal')">Fechar</button>
@@ -247,6 +257,17 @@
                     </p>
                 </div>
 
+                <div class="sequence-preview" id="sequence-preview">
+                    <div class="preview-header">
+                        <span class="preview-title">Sequência</span>
+                        <span class="preview-tag" id="difficulty-display">Médio</span>
+                    </div>
+                    <div class="preview-list" id="preview-list"></div>
+                    <div class="preview-note" id="medium-counter" style="display:none">
+                        Sequências restantes: <strong id="sequence-views-left">5</strong>
+                    </div>
+                </div>
+
                 <!-- Pontos visuais de progresso da sequência -->
                 <div class="score-dots" id="score-dots" aria-hidden="true"></div>
 
@@ -257,6 +278,27 @@
             </section>
 
             <!-- Botão iniciar (ETAPA 1) + Desafio 4: Botão reiniciar -->
+            <div class="difficulty-panel">
+                <div class="difficulty-top">
+                    <span class="difficulty-label">Modo de Dificuldade</span>
+                    <span class="difficulty-mode" id="difficulty-status">Médio</span>
+                </div>
+                <div class="difficulty-options">
+                    <button class="difficulty-card" data-difficulty="easy" type="button" aria-pressed="false">
+                        <strong>Fácil</strong>
+                        <small>Sequência visível sempre</small>
+                    </button>
+                    <button class="difficulty-card selected" data-difficulty="medium" type="button" aria-pressed="true">
+                        <strong>Médio</strong>
+                        <small>5 visualizações por partida</small>
+                    </button>
+                    <button class="difficulty-card" data-difficulty="hard" type="button" aria-pressed="false">
+                        <strong>Difícil</strong>
+                        <small>Sem ajuda visual</small>
+                    </button>
+                </div>
+            </div>
+
             <div class="controls">
                 <button class="ctrl-btn primary" id="start-btn" onclick="startGame()">
                     <span class="btn-icon">▶</span> INICIAR
