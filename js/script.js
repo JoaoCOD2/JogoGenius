@@ -135,6 +135,23 @@ function playSuccessSound() {
 
 let currentGameMode = 'single'; // 'single' ou 'multi'
 
+// Estado compartilhado do multiplayer usado por multiplayer.js
+let multiplayerState = {
+    roomId: null,
+    playerId: null,
+    playerName: '',
+    otherPlayerName: '',
+    isHost: false,
+    sequence: [],
+    playerSequence: [],
+    currentTurn: 1,
+    scores: { player1: 0, player2: 0 },
+    eliminated: null,
+    isActive: false,
+    waitingTimeoutId: null,
+    listeners: []
+};
+
 let sequence = [];   // Array: sequência gerada pelo jogo
 let playerSeq = [];   // Array: sequência digitada pelo jogador
 let round = 0;    // Número da rodada atual
@@ -641,6 +658,45 @@ function closeAllModals() {
         modal.classList.remove('active');
     });
     document.getElementById('modalOverlay').classList.remove('active');
+}
+
+function showErrorModal(title, message, actionLabel = 'Fechar', actionHandler = null) {
+    const modal = document.getElementById('errorModal');
+    if (!modal) {
+        console.error('Modal de erro não encontrado');
+        return;
+    }
+
+    document.getElementById('errorModalTitle').textContent = title;
+    document.getElementById('errorModalText').textContent = message;
+    const actionButton = document.getElementById('errorModalAction');
+    actionButton.textContent = actionLabel;
+
+    actionButton.onclick = () => {
+        closeModal('errorModal');
+        if (typeof actionHandler === 'function') {
+            actionHandler();
+        }
+    };
+
+    openModal('errorModal');
+}
+
+function removeAllListeners() {
+    if (!multiplayerState.listeners || multiplayerState.listeners.length === 0) {
+        return;
+    }
+
+    multiplayerState.listeners.forEach(unsubscribe => {
+        if (typeof unsubscribe === 'function') {
+            try {
+                unsubscribe();
+            } catch (err) {
+                console.warn('Erro ao remover listener:', err);
+            }
+        }
+    });
+    multiplayerState.listeners = [];
 }
 
 function exitGame() {

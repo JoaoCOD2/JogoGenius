@@ -395,7 +395,7 @@
           >
             Cancelar
           </button>
-          <button class="modal-btn-confirm" onclick="joinRoom()">Entrar</button>
+          <button id="joinRoomSubmit" class="modal-btn-confirm" onclick="joinRoom()">Entrar</button>
         </div>
       </div>
     </div>
@@ -458,6 +458,24 @@
           <button class="modal-btn-confirm" onclick="leaveMultiplayer()">
             Voltar ao Menu
           </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Erro e desconexão -->
+    <div class="modal" id="errorModal">
+      <div class="modal-content modal-content-sm">
+        <div class="modal-header">
+          <h2 id="errorModalTitle">Atenção</h2>
+          <button class="modal-close" onclick="closeModal('errorModal')">
+            &times;
+          </button>
+        </div>
+        <div class="modal-body" style="text-align: center;">
+          <p id="errorModalText">Mensagem de erro ou desconexão.</p>
+        </div>
+        <div class="modal-footer">
+          <button class="modal-btn-confirm" id="errorModalAction">Fechar</button>
         </div>
       </div>
     </div>
@@ -711,6 +729,7 @@
         getDatabase,
         ref,
         set,
+        get,
         onValue,
         remove,
         update,
@@ -736,6 +755,7 @@
       window.firebaseDatabase = database;
       window.firebaseRef = ref;
       window.firebaseSet = set;
+      window.firebaseGet = get;
       window.firebaseOnValue = onValue;
       window.firebaseRemove = remove;
       window.firebaseUpdate = update;

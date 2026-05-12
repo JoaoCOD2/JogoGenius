@@ -8,53 +8,7 @@
    - Eliminação de jogadores (quem errar sai)
 ================================================================ */
 
-// Variáveis globais de multiplayer
-let multiplayerState = {
-  roomId: null,
-  playerId: null,
-  playerName: '',
-  otherPlayerName: '',
-  isHost: false,
-  sequence: [],
-  playerSequence: [],
-  currentTurn: 1, // 1 ou 2
-  scores: { player1: 0, player2: 0 },
-  eliminated: null, // null, 1 ou 2
-  isActive: false,
-  listeners: [] // Para remover listeners depois
-};
-
 const ROOM_CODE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-
-// ================================================================
-// FUNÇÕES DE UI (Modais)
-// ================================================================
-
-function openModal(modalId) {
-  const modal = document.getElementById(modalId);
-  const overlay = document.getElementById('modalOverlay');
-  if (modal) {
-    modal.classList.add('active');
-    overlay.classList.add('active');
-  }
-}
-
-function closeModal(modalId) {
-  const modal = document.getElementById(modalId);
-  const overlay = document.getElementById('modalOverlay');
-  if (modal) {
-    modal.classList.remove('active');
-  }
-  // Verifica se ainda há modais abertos
-  if (!document.querySelector('.modal.active')) {
-    overlay.classList.remove('active');
-  }
-}
-
-function closeAllModals() {
-  document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
-  document.getElementById('modalOverlay').classList.remove('active');
-}
 
 // ================================================================
 // SELEÇÃO DE MODO DE JOGO
@@ -87,15 +41,18 @@ function showJoinRoomModal() {
 
 function leaveMultiplayer() {
   closeAllModals();
-  if (multiplayerState.roomId && multiplayerState.listeners.length > 0) {
-    // Remove todos os listeners
-    multiplayerState.listeners.forEach(unsubscribe => unsubscribe());
-    multiplayerState.listeners = [];
-    
-    // Remove dados da sala do Firebase
-    if (multiplayerState.isHost) {
-      window.firebaseRemove(window.firebaseRef(window.firebaseDatabase, `rooms/${multiplayerState.roomId}`));
-    }
+
+  // Remove listeners registrados com segurança
+  removeAllListeners();
+
+  if (multiplayerState.waitingTimeoutId) {
+    clearTimeout(multiplayerState.waitingTimeoutId);
+    multiplayerState.waitingTimeoutId = null;
+  }
+
+  // Remove dados da sala do Firebase se for host
+  if (multiplayerState.roomId && multiplayerState.isHost) {
+    window.firebaseRemove(window.firebaseRef(window.firebaseDatabase, `rooms/${multiplayerState.roomId}`));
   }
   
   // Reseta estado
@@ -111,6 +68,7 @@ function leaveMultiplayer() {
     scores: { player1: 0, player2: 0 },
     eliminated: null,
     isActive: false,
+    waitingTimeoutId: null,
     listeners: []
   };
   
@@ -135,16 +93,23 @@ function generateRoomCode() {
 
 async function createRoom() {
   const playerName = document.getElementById('playerNameInput').value.trim();
-  
+  const createButton = document.getElementById('createRoomSubmit');
+  const cancelButton = document.getElementById('createRoomCancel');
+
   if (!playerName) {
-    alert('Por favor, digite seu nome!');
+    showErrorModal('Nome obrigatório', 'Por favor, digite seu nome antes de criar a sala.');
     return;
   }
 
   if (!window.firebaseDatabase) {
-    alert('Firebase não inicializado. Recarregue a página.');
+    showErrorModal('Firebase indisponível', 'Firebase não foi inicializado. Recarregue a página.');
     return;
   }
+
+  createButton.disabled = true;
+  cancelButton.disabled = true;
+  const originalText = createButton.textContent;
+  createButton.textContent = 'Criando...';
 
   try {
     const roomCode = generateRoomCode();
@@ -157,7 +122,7 @@ async function createRoom() {
     multiplayerState.isHost = true;
     multiplayerState.currentTurn = 1;
 
-    // Cria sala no Firebase
+    // Cria sala no Firebase com estrutura básica e sequência sincronizada
     const roomData = {
       roomCode: roomCode,
       createdAt: Date.now(),
@@ -166,12 +131,15 @@ async function createRoom() {
         name: playerName,
         status: 'waiting',
         score: 0,
-        phase: 1
+        phase: 1,
+        playerSequence: []
       },
       player2: null,
       sequence: [],
+      playerSequence: [],
       currentTurn: 1,
-      gameActive: false
+      gameActive: false,
+      eliminated: null
     };
 
     await window.firebaseSet(window.firebaseRef(window.firebaseDatabase, `rooms/${roomId}`), roomData);
@@ -181,14 +149,18 @@ async function createRoom() {
     document.getElementById('roomCodeDisplay').style.display = 'block';
     document.getElementById('roomCodeBox').textContent = roomCode;
     document.getElementById('waitingMessage').style.display = 'block';
-    document.getElementById('createRoomSubmit').disabled = true;
+    createButton.disabled = true;
 
     // Aguarda segundo jogador
     listenForSecondPlayer(roomId);
 
   } catch (error) {
     console.error('Erro ao criar sala:', error);
-    alert('Erro ao criar sala. Tente novamente.');
+    showErrorModal('Erro ao criar sala', 'Não foi possível criar a sala. Tente novamente.');
+    createButton.disabled = false;
+  } finally {
+    cancelButton.disabled = false;
+    createButton.textContent = originalText;
   }
 }
 
@@ -205,8 +177,16 @@ function listenForSecondPlayer(roomId) {
     if (data && data.player2) {
       // Segundo jogador entrou!
       multiplayerState.otherPlayerName = data.player2.name;
-      unsubscribe();
-      
+      if (typeof unsubscribe === 'function') {
+        unsubscribe();
+      }
+      multiplayerState.listeners = multiplayerState.listeners.filter(l => l !== unsubscribe);
+
+      if (multiplayerState.waitingTimeoutId) {
+        clearTimeout(multiplayerState.waitingTimeoutId);
+        multiplayerState.waitingTimeoutId = null;
+      }
+
       // Aguarda um pouco e inicia o jogo
       setTimeout(() => {
         closeAllModals();
@@ -215,18 +195,22 @@ function listenForSecondPlayer(roomId) {
     }
   }, (error) => {
     console.error('Erro ao aguardar jogador:', error);
+    showErrorModal('Erro de conexão', 'Não foi possível aguardar o segundo jogador. Tente novamente.');
   });
 
   multiplayerState.listeners.push(unsubscribe);
 
-  // Timeout de 5 minutos
-  setTimeout(() => {
+  // Timeout de 5 minutos para evitar listener indefinido
+  multiplayerState.waitingTimeoutId = setTimeout(() => {
     if (multiplayerState.roomId === roomId && !multiplayerState.otherPlayerName) {
-      unsubscribe();
+      if (typeof unsubscribe === 'function') {
+        unsubscribe();
+      }
       multiplayerState.listeners = multiplayerState.listeners.filter(l => l !== unsubscribe);
-      alert('Tempo de espera expirou. Nenhum jogador entrou na sala.');
-      leaveMultiplayer();
-      openModal('multiplayerLobbyModal');
+      showErrorModal('Tempo de espera expirou', 'Nenhum jogador entrou na sala. Você será redirecionado ao lobby.', 'Voltar', () => {
+        leaveMultiplayer();
+        openModal('multiplayerLobbyModal');
+      });
     }
   }, 5 * 60 * 1000);
 }
@@ -238,68 +222,89 @@ function listenForSecondPlayer(roomId) {
 async function joinRoom() {
   const playerName = document.getElementById('playerNameJoinInput').value.trim();
   const roomCode = document.getElementById('roomCodeInput').value.toUpperCase().trim();
+  const joinButton = document.getElementById('joinRoomSubmit');
+  const cancelButton = document.querySelector('#joinRoomModal .modal-btn-cancel');
+  const joinStatus = document.getElementById('joinStatus');
+  const joinStatusMessage = document.getElementById('joinStatusMessage');
+
+  joinStatus.style.display = 'none';
+  joinStatusMessage.textContent = '';
 
   if (!playerName) {
-    alert('Por favor, digite seu nome!');
+    showErrorModal('Nome obrigatório', 'Por favor, digite seu nome antes de entrar na sala.');
     return;
   }
 
   if (!roomCode || roomCode.length !== 5) {
-    alert('Por favor, digite um código de sala válido (5 caracteres)!');
+    showErrorModal('Código inválido', 'Digite um código de sala válido com 5 caracteres.');
     return;
   }
 
   if (!window.firebaseDatabase) {
-    alert('Firebase não inicializado. Recarregue a página.');
+    showErrorModal('Firebase indisponível', 'Firebase não foi inicializado. Recarregue a página.');
     return;
   }
+
+  joinButton.disabled = true;
+  cancelButton.disabled = true;
+  const originalText = joinButton.textContent;
+  joinButton.textContent = 'Conectando...';
 
   try {
     const roomId = `room_${roomCode}`;
     const roomRef = window.firebaseRef(window.firebaseDatabase, `rooms/${roomId}`);
-    
-    // Obtém dados da sala
-    const snapshot = await new Promise((resolve) => {
-      window.firebaseOnValue(roomRef, resolve, { onlyOnce: true });
+
+    let timeoutId;
+    const timeoutPromise = new Promise((_, reject) => {
+      timeoutId = setTimeout(() => reject(new Error('timeout')), 10000);
     });
+    timeoutPromise.clear = () => clearTimeout(timeoutId);
+
+    const snapshot = await Promise.race([
+      window.firebaseGet(roomRef),
+      timeoutPromise
+    ]);
+
+    if (typeof timeoutPromise.clear === 'function') {
+      timeoutPromise.clear();
+    }
 
     if (!snapshot.exists()) {
-      document.getElementById('joinStatus').style.display = 'block';
-      document.getElementById('joinStatusMessage').textContent = '❌ Sala não encontrada!';
+      joinStatus.style.display = 'block';
+      joinStatusMessage.textContent = '❌ Sala não encontrada!';
       return;
     }
 
     const roomData = snapshot.val();
-    
+
     if (roomData.player2) {
-      document.getElementById('joinStatus').style.display = 'block';
-      document.getElementById('joinStatusMessage').textContent = '❌ Sala já está cheia!';
+      joinStatus.style.display = 'block';
+      joinStatusMessage.textContent = '❌ Sala já está cheia!';
       return;
     }
 
     if (roomData.gameActive) {
-      document.getElementById('joinStatus').style.display = 'block';
-      document.getElementById('joinStatusMessage').textContent = '❌ Jogo já começou!';
+      joinStatus.style.display = 'block';
+      joinStatusMessage.textContent = '❌ Jogo já começou!';
       return;
     }
 
-    // Entra como player2
     const playerId = `player_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
+
     multiplayerState.roomId = roomId;
     multiplayerState.playerId = playerId;
     multiplayerState.playerName = playerName;
     multiplayerState.isHost = false;
     multiplayerState.otherPlayerName = roomData.player1.name;
 
-    // Atualiza sala com player2
     await window.firebaseUpdate(roomRef, {
       player2: {
         id: playerId,
         name: playerName,
         status: 'ready',
         score: 0,
-        phase: 1
+        phase: 1,
+        playerSequence: []
       }
     });
 
@@ -308,8 +313,15 @@ async function joinRoom() {
 
   } catch (error) {
     console.error('Erro ao entrar na sala:', error);
-    document.getElementById('joinStatus').style.display = 'block';
-    document.getElementById('joinStatusMessage').textContent = '❌ Erro ao conectar!';
+    if (error.message === 'timeout') {
+      showErrorModal('Tempo esgotado', 'Não foi possível conectar ao servidor. Tente novamente.');
+    } else {
+      showErrorModal('Erro ao conectar', 'Falha ao entrar na sala. Verifique o código e tente novamente.');
+    }
+  } finally {
+    joinButton.disabled = false;
+    cancelButton.disabled = false;
+    joinButton.textContent = originalText;
   }
 }
 
@@ -356,8 +368,10 @@ async function initializeMultiplayerGame(roomId) {
     // Atualiza sala com sequência inicial
     await window.firebaseUpdate(roomRef, {
       sequence: multiplayerState.sequence,
+      playerSequence: [],
       gameActive: true,
-      currentTurn: 1
+      currentTurn: 1,
+      eliminated: null
     });
 
     // Host começa a jogar
@@ -365,6 +379,7 @@ async function initializeMultiplayerGame(roomId) {
 
   } catch (error) {
     console.error('Erro ao inicializar jogo:', error);
+    showErrorModal('Erro ao iniciar jogo', 'Não foi possível iniciar o jogo multiplayer. Tente novamente.');
   }
 }
 
@@ -377,43 +392,52 @@ function listenToGameState(roomId) {
 
   const unsubscribe = window.firebaseOnValue(roomRef, async (snapshot) => {
     if (!snapshot.exists()) {
-      console.log('Sala deletada');
-      leaveMultiplayer();
+      showErrorModal('Sala encerrada', 'A sala foi fechada pelo outro jogador. Você será redirecionado ao menu.', 'Voltar ao menu', () => {
+        leaveMultiplayer();
+        openModal('gameSelectModal');
+      });
       return;
     }
 
     const roomData = snapshot.val();
-    
+
+    // Detecta desconexão de um jogador após o jogo ter iniciado
+    if (roomData.gameActive && (!roomData.player1 || !roomData.player2)) {
+      showErrorModal('Conexão perdida', 'Um jogador desconectou. O jogo foi interrompido.', 'Voltar ao menu', () => {
+        leaveMultiplayer();
+        openModal('gameSelectModal');
+      });
+      return;
+    }
+
     // Atualiza dados locais
     multiplayerState.sequence = roomData.sequence || [];
+    multiplayerState.playerSequence = roomData.playerSequence || [];
     multiplayerState.currentTurn = roomData.currentTurn || 1;
     multiplayerState.scores = {
       player1: roomData.player1?.score || 0,
       player2: roomData.player2?.score || 0
     };
 
+    // Deu para sincronizar o playerSequence de cada jogador também
+    const player1Progress = roomData.player1?.playerSequence?.length || 0;
+    const player2Progress = roomData.player2?.playerSequence?.length || 0;
+
     // Atualiza placar na UI
     document.getElementById('player1Score').textContent = multiplayerState.scores.player1;
     document.getElementById('player2Score').textContent = multiplayerState.scores.player2;
 
-    // Verifica se alguém foi eliminado
-    if (roomData.eliminated) {
-      multiplayerState.eliminated = roomData.eliminated;
-      endMultiplayerGame(roomId, roomData.eliminated);
-      return;
-    }
-
-    // Atualiza status do turno
     if (multiplayerState.currentTurn === 1) {
       document.getElementById('player1Status').textContent = 'Sua vez';
-      document.getElementById('player2Status').textContent = 'Aguardando...';
+      document.getElementById('player2Status').textContent = `Progresso: ${player2Progress}/${multiplayerState.sequence.length}`;
     } else {
-      document.getElementById('player1Status').textContent = 'Aguardando...';
+      document.getElementById('player1Status').textContent = `Progresso: ${player1Progress}/${multiplayerState.sequence.length}`;
       document.getElementById('player2Status').textContent = 'Sua vez';
     }
 
   }, (error) => {
     console.error('Erro ao ouvir estado:', error);
+    showErrorModal('Erro de escuta', 'Ocorreu um problema ao sincronizar o estado do jogo.');
   });
 
   multiplayerState.listeners.push(unsubscribe);
@@ -498,29 +522,25 @@ async function handleMultiplayerColorClick(color) {
     const newColor = COLORS[Math.floor(Math.random() * COLORS.length)];
     multiplayerState.sequence.push(newColor);
 
-    // Aumenta pontuação
-    const currentScore = multiplayerState.isHost ? 'player1' : 'player2';
-    multiplayerState.scores[currentScore === 'player1' ? 'player1' : 'player2']++;
+    // Aumenta pontuação do jogador atual
+    const playerKey = multiplayerState.isHost ? 'player1' : 'player2';
+    multiplayerState.scores[playerKey]++;
+
+    const currentPlayerData = {
+      id: multiplayerState.playerId,
+      name: multiplayerState.playerName,
+      status: 'ready',
+      score: multiplayerState.scores[playerKey],
+      phase: multiplayerState.sequence.length,
+      playerSequence: multiplayerState.playerSequence
+    };
 
     const updates = {
       sequence: multiplayerState.sequence,
-      playerSequence: [],
-      ['player' + (multiplayerState.isHost ? 1 : 2)]: {
-        ...multiplayerState.isHost ? 
-          { id: multiplayerState.playerId, name: multiplayerState.playerName } :
-          { id: multiplayerState.playerId, name: multiplayerState.playerName },
-        status: 'ready',
-        score: multiplayerState.scores[currentScore],
-        phase: multiplayerState.sequence.length
-      }
+      playerSequence: multiplayerState.playerSequence,
+      [playerKey]: currentPlayerData,
+      currentTurn: multiplayerState.isHost ? 2 : 1
     };
-
-    // Muda turno
-    if (multiplayerState.isHost) {
-      updates.currentTurn = 2;
-    } else {
-      updates.currentTurn = 1;
-    }
 
     await window.firebaseUpdate(roomRef, updates);
   }
@@ -533,8 +553,15 @@ async function handleMultiplayerColorClick(color) {
 function endMultiplayerGame(roomId, eliminatedPlayer) {
   multiplayerState.isActive = false;
   
+  // Fecha o modal de jogo se ainda estiver aberto
+  closeModal('gameRoomModal');
+
   // Remove listeners
-  multiplayerState.listeners.forEach(unsubscribe => unsubscribe());
+  multiplayerState.listeners.forEach(unsubscribe => {
+    if (typeof unsubscribe === 'function') {
+      unsubscribe();
+    }
+  });
   multiplayerState.listeners = [];
 
   const isWinner = 
