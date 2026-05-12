@@ -423,6 +423,49 @@
             <div class="player-status" id="player2Status">Aguardando...</div>
           </div>
         </div>
+
+        <!-- Tabuleiro Multiplayer -->
+        <div class="game-area" style="display: flex; justify-content: center; margin: 20px 0;">
+          <div class="board-wrapper" style="width: 250px; height: 250px;">
+            <div class="board-container">
+              <button class="btn-pad top-left" id="mp-btn-green"
+                      onclick="handleMultiplayerColorClick('green')"
+                      disabled aria-label="Verde">
+                <div class="pad-inner"></div>
+                <div class="pad-shine"></div>
+              </button>
+              <button class="btn-pad top-right" id="mp-btn-red"
+                      onclick="handleMultiplayerColorClick('red')"
+                      disabled aria-label="Vermelho">
+                <div class="pad-inner"></div>
+                <div class="pad-shine"></div>
+              </button>
+              <button class="btn-pad bottom-left" id="mp-btn-yellow"
+                      onclick="handleMultiplayerColorClick('yellow')"
+                      disabled aria-label="Amarelo">
+                <div class="pad-inner"></div>
+                <div class="pad-shine"></div>
+              </button>
+              <button class="btn-pad bottom-right" id="mp-btn-blue"
+                      onclick="handleMultiplayerColorClick('blue')"
+                      disabled aria-label="Azul">
+                <div class="pad-inner"></div>
+                <div class="pad-shine"></div>
+              </button>
+
+              <div class="center-hub" aria-hidden="true">
+                <div class="hub-ring"></div>
+                <div class="hub-content">
+                  <span class="hub-round" id="mp-round-display">1</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin: 20px 0;">
+          <div class="score-dots" id="mp-score-dots"></div>
+        </div>
       </div>
     </div>
 

@@ -149,7 +149,8 @@ let multiplayerState = {
     eliminated: null,
     isActive: false,
     waitingTimeoutId: null,
-    listeners: []
+    listeners: [],
+    lastPlayedSequenceLength: 0
 };
 
 let sequence = [];   // Array: sequência gerada pelo jogo
