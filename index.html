@@ -14,6 +14,124 @@
     <body>
 
         <!-- ============================================================
+       NAVBAR MODERNA
+  ============================================================ -->
+        <nav class="navbar">
+            <div class="navbar-container">
+                <div class="navbar-brand">
+                    <span class="navbar-logo">GNS</span>
+                    <span class="navbar-title">GENIUS</span>
+                </div>
+                <ul class="navbar-menu">
+                    <li><button class="nav-btn" onclick="openModal('howToPlayModal')">Como Jogar</button></li>
+                    <li><button class="nav-btn" onclick="openModal('ranksModal')">Ranks</button></li>
+                    <li><button class="nav-btn" onclick="openModal('aboutModal')">Sobre o Jogo</button></li>
+                    <li><button class="nav-btn nav-exit" onclick="openModal('exitModal')">Sair</button></li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- ============================================================
+       MODAIS
+  ============================================================ -->
+
+        <!-- Modal: Como Jogar -->
+        <div class="modal" id="howToPlayModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Como Jogar</h2>
+                    <button class="modal-close" onclick="closeModal('howToPlayModal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <ol>
+                        <li><strong>Clique em "INICIAR"</strong> para começar a partida</li>
+                        <li><strong>Observe a sequência</strong> de cores que o jogo mostra</li>
+                        <li><strong>Repita a sequência</strong> clicando nos botões coloridos na mesma ordem</li>
+                        <li><strong>A cada rodada</strong>, uma nova cor é adicionada à sequência</li>
+                        <li><strong>Atalhos de teclado:</strong>
+                            <ul>
+                                <li><kbd>G</kbd> para Verde</li>
+                                <li><kbd>R</kbd> para Vermelho</li>
+                                <li><kbd>Y</kbd> para Amarelo</li>
+                                <li><kbd>B</kbd> para Azul</li>
+                                <li><kbd>Espaço</kbd> para iniciar</li>
+                            </ul>
+                        </li>
+                        <li><strong>Quanto mais fases</strong> você avança, mais rápido fica o jogo</li>
+                        <li><strong>Errando</strong> uma cor, o jogo termina</li>
+                        <li><strong>Acumule pontos</strong> e tente bater recordes!</li>
+                    </ol>
+                </div>
+                <div class="modal-footer">
+                    <button class="modal-btn-close" onclick="closeModal('howToPlayModal')">Fechar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal: Ranks -->
+        <div class="modal" id="ranksModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Ranking de Jogadores</h2>
+                    <button class="modal-close" onclick="closeModal('ranksModal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div id="leaderboard-content">
+                        <p style="text-align: center; color: var(--text-muted);">Nenhum jogador no ranking ainda.</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="modal-btn-close" onclick="closeModal('ranksModal')">Fechar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal: Sobre o Jogo -->
+        <div class="modal" id="aboutModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Sobre o Jogo</h2>
+                    <button class="modal-close" onclick="closeModal('aboutModal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>GENIUS</strong> é um clássico jogo de memória que desafia sua capacidade de repetir sequências cada vez mais longas.</p>
+                    <p>O jogo foi originalmente criado pela Milton Bradley em 1978 com o nome "Simon". Essa versão foi desenvolvida com tecnologias web modernas:</p>
+                    <ul style="margin-top: 12px;">
+                        <li><strong>HTML5</strong> — Estrutura semântica</li>
+                        <li><strong>CSS3</strong> — Design responsivo e animações</li>
+                        <li><strong>JavaScript</strong> — Lógica de jogo e interatividade</li>
+                        <li><strong>Web Audio API</strong> — Sons sintetizados em tempo real</li>
+                        <li><strong>LocalStorage</strong> — Persistência de recordes e rankings</li>
+                    </ul>
+                    <p style="margin-top: 16px; font-style: italic; color: var(--text-muted);">Teste seus limites de memória e torne-se um mestre do GENIUS!</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="modal-btn-close" onclick="closeModal('aboutModal')">Fechar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal: Sair -->
+        <div class="modal" id="exitModal">
+            <div class="modal-content modal-content-sm">
+                <div class="modal-header">
+                    <h2>Sair do Jogo?</h2>
+                    <button class="modal-close" onclick="closeModal('exitModal')">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>Tem certeza que deseja sair do jogo?</p>
+                </div>
+                <div class="modal-footer" style="gap: 12px;">
+                    <button class="modal-btn-cancel" onclick="closeModal('exitModal')">Cancelar</button>
+                    <button class="modal-btn-exit" onclick="exitGame()">Sair</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Overlay dos modais -->
+        <div class="modal-overlay" id="modalOverlay" onclick="closeAllModals()"></div>
+
+        <!-- ============================================================
        ETAPA 1 — HTML: Estrutura visual do jogo
   ============================================================ -->
 

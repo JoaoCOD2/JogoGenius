@@ -816,3 +816,307 @@ kbd {
 .dot {
   animation: dotPop 0.3s ease forwards;
 }
+
+/* ================================================================
+   NAVBAR — Design moderno e responsivo
+================================================================ */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(180deg, var(--bg-main) 0%, rgba(13, 13, 26, 0.95) 100%);
+  border-bottom: 1px solid var(--border-subtle);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.navbar-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Orbitron', sans-serif;
+  cursor: pointer;
+}
+
+.navbar-logo {
+  font-size: 20px;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--cyan), var(--green-base));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 2px;
+}
+
+.navbar-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 3px;
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .navbar-title {
+    display: inline;
+  }
+}
+
+.navbar-menu {
+  display: flex;
+  list-style: none;
+  gap: 8px;
+  align-items: center;
+}
+
+.nav-btn {
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: all var(--transition-mid);
+  white-space: nowrap;
+}
+
+.nav-btn:hover {
+  background: var(--bg-surface2);
+  border-color: var(--cyan);
+  color: var(--cyan);
+  box-shadow: 0 0 12px rgba(0, 212, 255, 0.3);
+}
+
+.nav-exit:hover {
+  border-color: var(--red-base);
+  color: var(--red-base);
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.3);
+}
+
+@media (max-width: 600px) {
+  .nav-btn {
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+}
+
+/* ================================================================
+   MODAIS — Janelas de conteúdo
+================================================================ */
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.7);
+  background: var(--bg-main);
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+  z-index: 2000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--transition-mid);
+  max-height: 80vh;
+  overflow-y: auto;
+  max-width: 500px;
+  width: 90%;
+}
+
+.modal.active {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(2px);
+  z-index: 1500;
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--transition-mid);
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.modal-content-sm {
+  max-width: 380px;
+}
+
+.modal-header {
+  padding: 20px;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h2 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 20px;
+  color: var(--text-primary);
+  letter-spacing: 2px;
+  margin: 0;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 28px;
+  cursor: pointer;
+  transition: color var(--transition-mid);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close:hover {
+  color: var(--text-primary);
+}
+
+.modal-body {
+  padding: 20px;
+  flex: 1;
+  overflow-y: auto;
+  color: var(--text-muted);
+  line-height: 1.8;
+  font-size: 14px;
+}
+
+.modal-body ol {
+  padding-left: 20px;
+}
+
+.modal-body li {
+  margin-bottom: 12px;
+}
+
+.modal-body ul {
+  padding-left: 20px;
+  margin-top: 8px;
+}
+
+.modal-body strong {
+  color: var(--text-primary);
+}
+
+.modal-body kbd {
+  font-family: 'Orbitron', monospace;
+  font-size: 11px;
+  background: var(--bg-surface2);
+  border: 1px solid var(--border-mid);
+  border-radius: 3px;
+  padding: 2px 6px;
+  color: var(--cyan);
+  margin: 0 2px;
+  display: inline-block;
+}
+
+.modal-body p {
+  margin-bottom: 12px;
+}
+
+.modal-footer {
+  padding: 16px 20px;
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.modal-btn-close,
+.modal-btn-cancel {
+  background: var(--bg-surface2);
+  border: 1px solid var(--border-mid);
+  color: var(--text-primary);
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: all var(--transition-mid);
+}
+
+.modal-btn-close:hover,
+.modal-btn-cancel:hover {
+  background: var(--bg-surface);
+  border-color: var(--text-muted);
+}
+
+.modal-btn-exit {
+  background: var(--red-base);
+  border: 1px solid var(--red-base);
+  color: white;
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: all var(--transition-mid);
+}
+
+.modal-btn-exit:hover {
+  background: #dc2626;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.4);
+}
+
+/* ================================================================
+   AJUSTE DE LAYOUT COM NAVBAR
+================================================================ */
+.genius-app {
+  margin-top: 20px;
+}
+
+.defeat-overlay {
+  margin-top: 60px;
+}
+
+@media (max-width: 600px) {
+  .navbar-container {
+    padding: 10px 16px;
+  }
+
+  .modal {
+    width: 95%;
+    max-height: 75vh;
+  }
+}

@@ -464,3 +464,61 @@ document.addEventListener('keydown', e => {
 (function init() {
     document.getElementById('record-display').textContent = record;
 })();
+
+/* ================================================================
+   SISTEMA DE MODAIS
+   Funções para abrir, fechar e gerenciar os modais
+================================================================ */
+
+function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    const overlay = document.getElementById('modalOverlay');
+    
+    if (modal) {
+        modal.classList.add('active');
+        overlay.classList.add('active');
+    }
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    const overlay = document.getElementById('modalOverlay');
+    
+    if (modal) {
+        modal.classList.remove('active');
+    }
+    
+    // Remove overlay apenas se nenhum modal estiver aberto
+    const anyModalOpen = document.querySelector('.modal.active');
+    if (!anyModalOpen) {
+        overlay.classList.remove('active');
+    }
+}
+
+function closeAllModals() {
+    document.querySelectorAll('.modal.active').forEach(modal => {
+        modal.classList.remove('active');
+    });
+    document.getElementById('modalOverlay').classList.remove('active');
+}
+
+function exitGame() {
+    // Fecha o modal
+    closeAllModals();
+    
+    // Para o jogo se estiver em andamento
+    gameActive = false;
+    accepting = false;
+    
+    // Reseta a interface
+    setTimeout(() => {
+        window.location.href = 'about:blank';
+    }, 300);
+}
+
+// Fechar modais ao pressionar ESC
+document.addEventListener('keydown', (e) => {
+    if (e.code === 'Escape') {
+        closeAllModals();
+    }
+});
