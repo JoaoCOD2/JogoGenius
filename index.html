@@ -1,324 +1,746 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GENIUS — Jogo de Memória</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
 
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>GENIUS — Jogo de Memória</title>
-        <link
-            href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600&display=swap"
-            rel="stylesheet" />
-        <link rel="stylesheet" href="css/style.css" />
-    </head>
-
-    <body>
-
-        <!-- ============================================================
+  <body>
+    <!-- ============================================================
        NAVBAR MODERNA
   ============================================================ -->
-        <nav class="navbar">
-            <div class="navbar-container">
-                <div class="navbar-brand">
-                    <span class="navbar-logo">GNS</span>
-                    <span class="navbar-title">GENIUS</span>
-                </div>
-                <ul class="navbar-menu">
-                    <li><button class="nav-btn" onclick="openModal('howToPlayModal')">Como Jogar</button></li>
-                    <li><button class="nav-btn" onclick="openModal('ranksModal')">Ranks</button></li>
-                    <li><button class="nav-btn" onclick="openModal('aboutModal')">Sobre o Jogo</button></li>
-                    <li><button class="nav-btn nav-exit" onclick="openModal('exitModal')">Sair</button></li>
-                </ul>
-            </div>
-        </nav>
+    <nav class="navbar">
+      <div class="navbar-container">
+        <div class="navbar-brand">
+          <span class="navbar-logo">GNS</span>
+          <span class="navbar-title">GENIUS</span>
+        </div>
+        <ul class="navbar-menu">
+          <li>
+            <button class="nav-btn" onclick="openModal('gameSelectModal')">
+              Modo de Jogo
+            </button>
+          </li>
+          <li>
+            <button class="nav-btn" onclick="openModal('howToPlayModal')">
+              Como Jogar
+            </button>
+          </li>
+          <li>
+            <button class="nav-btn" onclick="openModal('ranksModal')">
+              Ranks
+            </button>
+          </li>
+          <li>
+            <button class="nav-btn" onclick="openModal('aboutModal')">
+              Sobre o Jogo
+            </button>
+          </li>
+          <li>
+            <button class="nav-btn nav-exit" onclick="openModal('exitModal')">
+              Sair
+            </button>
+          </li>
+        </ul>
+      </div>
+    </nav>
 
-        <!-- ============================================================
+    <!-- ============================================================
        MODAIS
   ============================================================ -->
 
-        <!-- Modal: Como Jogar -->
-        <div class="modal" id="howToPlayModal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2>Como Jogar</h2>
-                    <button class="modal-close" onclick="closeModal('howToPlayModal')">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <p><strong>Objetivo:</strong> memorize a sequência de luzes e sons e repita cada rodada corretamente. A cada fase, o padrão aumenta e o jogo fica mais rápido.</p>
-                    <p><strong>Como ganhar pontos:</strong> cada rodada correta soma pontos extras e aumenta seu recorde. Quanto mais fases você chegar, maior será sua pontuação.</p>
-                    <ol>
-                        <li><strong>Clique em "INICIAR"</strong> para começar a partida.</li>
-                        <li><strong>Observe a sequência</strong> exibida no modo escolhido.</li>
-                        <li><strong>Repita a sequência</strong> clicando nos botões coloridos na mesma ordem.</li>
-                        <li><strong>A cada rodada</strong>, uma nova cor é adicionada à sequência.</li>
-                        <li><strong>Atalhos de teclado:</strong>
-                            <ul>
-                                <li><kbd>G</kbd> para Verde</li>
-                                <li><kbd>R</kbd> para Vermelho</li>
-                                <li><kbd>Y</kbd> para Amarelo</li>
-                                <li><kbd>B</kbd> para Azul</li>
-                                <li><kbd>Espaço</kbd> para iniciar</li>
-                            </ul>
-                        </li>
-                        <li><strong>Quanto mais fases</strong> você avança, mais rápido fica o jogo.</li>
-                        <li><strong>Errando</strong> uma cor, o jogo termina.</li>
-                        <li><strong>Acumule pontos</strong> e tente bater recordes!</li>
-                    </ol>
-                    <div class="modal-subsection">
-                        <h3>Modos de dificuldade</h3>
-                        <ul>
-                            <li><strong>Fácil</strong> — a sequência fica visível no painel o tempo todo. Ideal para iniciantes.</li>
-                            <li><strong>Médio</strong> — você pode visualizar a sequência completa apenas 5 vezes por partida. Use as visualizações com cuidado.</li>
-                            <li><strong>Difícil</strong> — não há ajuda visual da sequência. Você deve memorizar apenas pelos flashes dos botões.</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="modal-btn-close" onclick="closeModal('howToPlayModal')">Fechar</button>
-                </div>
-            </div>
+    <!-- Modal: Como Jogar -->
+    <div class="modal" id="howToPlayModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Como Jogar</h2>
+          <button class="modal-close" onclick="closeModal('howToPlayModal')">
+            &times;
+          </button>
         </div>
-
-        <!-- Modal: Ranks -->
-        <div class="modal" id="ranksModal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2>Ranking de Jogadores</h2>
-                    <button class="modal-close" onclick="closeModal('ranksModal')">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <div id="leaderboard-content">
-                        <p style="text-align: center; color: var(--text-muted);">Nenhum jogador no ranking ainda.</p>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="modal-btn-close" onclick="closeModal('ranksModal')">Fechar</button>
-                </div>
-            </div>
+        <div class="modal-body">
+          <p>
+            <strong>Objetivo:</strong> memorize a sequência de luzes e sons e
+            repita cada rodada corretamente. A cada fase, o padrão aumenta e o
+            jogo fica mais rápido.
+          </p>
+          <p>
+            <strong>Como ganhar pontos:</strong> cada rodada correta soma pontos
+            extras e aumenta seu recorde. Quanto mais fases você chegar, maior
+            será sua pontuação.
+          </p>
+          <ol>
+            <li>
+              <strong>Clique em "INICIAR"</strong> para começar a partida.
+            </li>
+            <li>
+              <strong>Observe a sequência</strong> exibida no modo escolhido.
+            </li>
+            <li>
+              <strong>Repita a sequência</strong> clicando nos botões coloridos
+              na mesma ordem.
+            </li>
+            <li>
+              <strong>A cada rodada</strong>, uma nova cor é adicionada à
+              sequência.
+            </li>
+            <li>
+              <strong>Atalhos de teclado:</strong>
+              <ul>
+                <li><kbd>G</kbd> para Verde</li>
+                <li><kbd>R</kbd> para Vermelho</li>
+                <li><kbd>Y</kbd> para Amarelo</li>
+                <li><kbd>B</kbd> para Azul</li>
+                <li><kbd>Espaço</kbd> para iniciar</li>
+              </ul>
+            </li>
+            <li>
+              <strong>Quanto mais fases</strong> você avança, mais rápido fica o
+              jogo.
+            </li>
+            <li><strong>Errando</strong> uma cor, o jogo termina.</li>
+            <li><strong>Acumule pontos</strong> e tente bater recordes!</li>
+          </ol>
+          <div class="modal-subsection">
+            <h3>Modos de dificuldade</h3>
+            <ul>
+              <li>
+                <strong>Fácil</strong> — a sequência fica visível no painel o
+                tempo todo. Ideal para iniciantes.
+              </li>
+              <li>
+                <strong>Médio</strong> — você pode visualizar a sequência
+                completa apenas 5 vezes por partida. Use as visualizações com
+                cuidado.
+              </li>
+              <li>
+                <strong>Difícil</strong> — não há ajuda visual da sequência.
+                Você deve memorizar apenas pelos flashes dos botões.
+              </li>
+            </ul>
+          </div>
         </div>
-
-        <!-- Modal: Sobre o Jogo -->
-        <div class="modal" id="aboutModal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2>Sobre o Jogo</h2>
-                    <button class="modal-close" onclick="closeModal('aboutModal')">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <p><strong>GENIUS</strong> é um clássico jogo de memória que desafia sua capacidade de repetir sequências cada vez mais longas.</p>
-                    <p>O jogo foi originalmente criado pela Milton Bradley em 1978 com o nome "Simon". Essa versão foi desenvolvida com tecnologias web modernas:</p>
-                    <ul style="margin-top: 12px;">
-                        <li><strong>HTML5</strong> — Estrutura semântica</li>
-                        <li><strong>CSS3</strong> — Design responsivo e animações</li>
-                        <li><strong>JavaScript</strong> — Lógica de jogo e interatividade</li>
-                        <li><strong>Web Audio API</strong> — Sons sintetizados em tempo real</li>
-                        <li><strong>LocalStorage</strong> — Persistência de recordes e rankings</li>
-                    </ul>
-                    <p style="margin-top: 16px; font-style: italic; color: var(--text-muted);">Teste seus limites de memória e torne-se um mestre do GENIUS!</p>
-                </div>
-                <div class="modal-footer">
-                    <button class="modal-btn-close" onclick="closeModal('aboutModal')">Fechar</button>
-                </div>
-            </div>
+        <div class="modal-footer">
+          <button
+            class="modal-btn-close"
+            onclick="closeModal('howToPlayModal')"
+          >
+            Fechar
+          </button>
         </div>
+      </div>
+    </div>
 
-        <!-- Modal: Sair -->
-        <div class="modal" id="exitModal">
-            <div class="modal-content modal-content-sm">
-                <div class="modal-header">
-                    <h2>Sair do Jogo?</h2>
-                    <button class="modal-close" onclick="closeModal('exitModal')">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <p>Tem certeza que deseja sair do jogo?</p>
-                </div>
-                <div class="modal-footer" style="gap: 12px;">
-                    <button class="modal-btn-cancel" onclick="closeModal('exitModal')">Cancelar</button>
-                    <button class="modal-btn-exit" onclick="exitGame()">Sair</button>
-                </div>
-            </div>
+    <!-- Modal: Ranks -->
+    <div class="modal" id="ranksModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Ranking de Jogadores</h2>
+          <button class="modal-close" onclick="closeModal('ranksModal')">
+            &times;
+          </button>
         </div>
+        <div class="modal-body">
+          <div id="leaderboard-content">
+            <p style="text-align: center; color: var(--text-muted)">
+              Nenhum jogador no ranking ainda.
+            </p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="modal-btn-close" onclick="closeModal('ranksModal')">
+            Fechar
+          </button>
+        </div>
+      </div>
+    </div>
 
-        <!-- Overlay dos modais -->
-        <div class="modal-overlay" id="modalOverlay" onclick="closeAllModals()"></div>
+    <!-- Modal: Sobre o Jogo -->
+    <div class="modal" id="aboutModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Sobre o Jogo</h2>
+          <button class="modal-close" onclick="closeModal('aboutModal')">
+            &times;
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>
+            <strong>GENIUS</strong> é um clássico jogo de memória que desafia
+            sua capacidade de repetir sequências cada vez mais longas.
+          </p>
+          <p>
+            O jogo foi originalmente criado pela Milton Bradley em 1978 com o
+            nome "Simon". Essa versão foi desenvolvida com tecnologias web
+            modernas:
+          </p>
+          <ul style="margin-top: 12px">
+            <li><strong>HTML5</strong> — Estrutura semântica</li>
+            <li><strong>CSS3</strong> — Design responsivo e animações</li>
+            <li>
+              <strong>JavaScript</strong> — Lógica de jogo e interatividade
+            </li>
+            <li>
+              <strong>Web Audio API</strong> — Sons sintetizados em tempo real
+            </li>
+            <li>
+              <strong>LocalStorage</strong> — Persistência de recordes e
+              rankings
+            </li>
+          </ul>
+          <p
+            style="
+              margin-top: 16px;
+              font-style: italic;
+              color: var(--text-muted);
+            "
+          >
+            Teste seus limites de memória e torne-se um mestre do GENIUS!
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button class="modal-btn-close" onclick="closeModal('aboutModal')">
+            Fechar
+          </button>
+        </div>
+      </div>
+    </div>
 
-        <!-- ============================================================
+    <!-- Modal: Sair -->
+    <div class="modal" id="exitModal">
+      <div class="modal-content modal-content-sm">
+        <div class="modal-header">
+          <h2>Sair do Jogo?</h2>
+          <button class="modal-close" onclick="closeModal('exitModal')">
+            &times;
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>Tem certeza que deseja sair do jogo?</p>
+        </div>
+        <div class="modal-footer" style="gap: 12px">
+          <button class="modal-btn-cancel" onclick="closeModal('exitModal')">
+            Cancelar
+          </button>
+          <button class="modal-btn-exit" onclick="exitGame()">Sair</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Modo de Jogo (Single vs Multiplayer) -->
+    <div class="modal" id="gameSelectModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Escolha o Modo de Jogo</h2>
+          <button class="modal-close" onclick="closeModal('gameSelectModal')">
+            &times;
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="game-mode-selection">
+            <button class="mode-card" onclick="selectGameMode('single')">
+              <div class="mode-icon">🎮</div>
+              <div class="mode-title">Um Jogador</div>
+              <div class="mode-desc">
+                Jogue contra o computador e bata seus recordes
+              </div>
+            </button>
+            <button class="mode-card" onclick="selectGameMode('multi')">
+              <div class="mode-icon">👥</div>
+              <div class="mode-title">Multiplayer Online</div>
+              <div class="mode-desc">Desafie amigos em tempo real</div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Multiplayer Lobby -->
+    <div class="modal" id="multiplayerLobbyModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Multiplayer</h2>
+          <button class="modal-close" onclick="leaveMultiplayer()">
+            &times;
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="lobby-options">
+            <button class="lobby-btn create" onclick="showCreateRoomModal()">
+              <span class="lobby-icon">➕</span> Criar Sala
+            </button>
+            <button class="lobby-btn join" onclick="showJoinRoomModal()">
+              <span class="lobby-icon">🚪</span> Entrar em Sala
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Criar Sala -->
+    <div class="modal" id="createRoomModal">
+      <div class="modal-content modal-content-sm">
+        <div class="modal-header">
+          <h2>Criar Sala</h2>
+          <button class="modal-close" onclick="closeModal('createRoomModal')">
+            &times;
+          </button>
+        </div>
+        <div class="modal-body">
+          <label for="playerNameInput" class="form-label">Seu nome:</label>
+          <input
+            type="text"
+            id="playerNameInput"
+            class="form-input"
+            placeholder="Digite seu nome"
+            maxlength="20"
+          />
+          <div id="roomCodeDisplay" style="margin-top: 20px; display: none">
+            <p
+              style="
+                text-align: center;
+                color: var(--text-muted);
+                margin-bottom: 8px;
+              "
+            >
+              Código da sala:
+            </p>
+            <div class="room-code-box" id="roomCodeBox">XXXXX</div>
+            <p
+              style="
+                text-align: center;
+                color: var(--text-muted);
+                font-size: 12px;
+                margin-top: 8px;
+              "
+            >
+              Compartilhe este código com seus amigos
+            </p>
+          </div>
+          <div
+            id="waitingMessage"
+            style="text-align: center; margin-top: 20px; display: none"
+          >
+            <p style="color: var(--text-muted)">
+              Aguardando segundo jogador...
+            </p>
+            <div class="loading-spinner"></div>
+          </div>
+        </div>
+        <div class="modal-footer" style="gap: 12px">
+          <button
+            class="modal-btn-cancel"
+            id="createRoomCancel"
+            onclick="closeModal('createRoomModal')"
+          >
+            Cancelar
+          </button>
+          <button
+            class="modal-btn-confirm"
+            id="createRoomSubmit"
+            onclick="createRoom()"
+          >
+            Criar Sala
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Entrar em Sala -->
+    <div class="modal" id="joinRoomModal">
+      <div class="modal-content modal-content-sm">
+        <div class="modal-header">
+          <h2>Entrar em Sala</h2>
+          <button class="modal-close" onclick="closeModal('joinRoomModal')">
+            &times;
+          </button>
+        </div>
+        <div class="modal-body">
+          <label for="playerNameJoinInput" class="form-label">Seu nome:</label>
+          <input
+            type="text"
+            id="playerNameJoinInput"
+            class="form-input"
+            placeholder="Digite seu nome"
+            maxlength="20"
+          />
+          <label for="roomCodeInput" class="form-label" style="margin-top: 16px"
+            >Código da sala:</label
+          >
+          <input
+            type="text"
+            id="roomCodeInput"
+            class="form-input"
+            placeholder="Ex: ABCDE"
+            maxlength="5"
+            style="text-transform: uppercase"
+          />
+          <div
+            id="joinStatus"
+            style="margin-top: 20px; display: none; text-align: center"
+          >
+            <p id="joinStatusMessage" style="color: var(--text-muted)"></p>
+          </div>
+        </div>
+        <div class="modal-footer" style="gap: 12px">
+          <button
+            class="modal-btn-cancel"
+            onclick="closeModal('joinRoomModal')"
+          >
+            Cancelar
+          </button>
+          <button class="modal-btn-confirm" onclick="joinRoom()">Entrar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Sala Multiplayer (Jogo) -->
+    <div
+      class="modal"
+      id="gameRoomModal"
+      style="background: rgba(0, 0, 0, 0.95)"
+    >
+      <div
+        class="modal-content modal-content-game"
+        style="background: transparent; border: none; max-width: 100%"
+      >
+        <div class="game-room-header">
+          <div class="player-info player1">
+            <div class="player-name" id="player1Name">Jogador 1</div>
+            <div class="player-score" id="player1Score">0</div>
+            <div class="player-status" id="player1Status">Aguardando...</div>
+          </div>
+          <div class="vs-indicator">VS</div>
+          <div class="player-info player2">
+            <div class="player-name" id="player2Name">Jogador 2</div>
+            <div class="player-score" id="player2Score">0</div>
+            <div class="player-status" id="player2Status">Aguardando...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Resultado Multiplayer -->
+    <div class="modal" id="multiplayerResultModal">
+      <div class="modal-content modal-content-sm">
+        <div class="modal-header">
+          <h2 id="resultTitle">Fim do Jogo</h2>
+          <button class="modal-close" onclick="leaveMultiplayer()">
+            &times;
+          </button>
+        </div>
+        <div class="modal-body" style="text-align: center">
+          <div
+            class="result-message"
+            id="resultMessage"
+            style="margin-bottom: 20px"
+          >
+            <!-- Mensagem de resultado -->
+          </div>
+          <div class="result-stats">
+            <div class="result-stat">
+              <span class="result-label">Sua pontuação</span>
+              <span class="result-value" id="resultScore">0</span>
+            </div>
+            <div class="result-stat">
+              <span class="result-label">Fase alcançada</span>
+              <span class="result-value" id="resultPhase">1</span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="modal-btn-confirm" onclick="leaveMultiplayer()">
+            Voltar ao Menu
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Overlay dos modais -->
+    <div
+      class="modal-overlay"
+      id="modalOverlay"
+      onclick="closeAllModals()"
+    ></div>
+
+    <!-- ============================================================
        ETAPA 1 — HTML: Estrutura visual do jogo
   ============================================================ -->
 
-        <!-- Desafio 3: Tela de derrota bonita -->
-        <div class="defeat-overlay" id="defeat-overlay" role="dialog" aria-modal="true" aria-label="Tela de derrota">
-            <div class="defeat-particles" id="defeat-particles"></div>
+    <!-- Desafio 3: Tela de derrota bonita -->
+    <div
+      class="defeat-overlay"
+      id="defeat-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Tela de derrota"
+    >
+      <div class="defeat-particles" id="defeat-particles"></div>
 
-            <div class="defeat-content">
-                <div class="defeat-glitch" data-text="GAME OVER">GAME OVER</div>
+      <div class="defeat-content">
+        <div class="defeat-glitch" data-text="GAME OVER">GAME OVER</div>
 
-                <div class="defeat-stats">
-                    <div class="defeat-stat-block">
-                        <span class="defeat-stat-label">sua pontuação</span>
-                        <span class="defeat-score-value" id="defeat-score">0</span>
-                    </div>
-                    <div class="defeat-divider"></div>
-                    <div class="defeat-stat-block">
-                        <span class="defeat-stat-label">fase alcançada</span>
-                        <span class="defeat-phase-value" id="defeat-phase">1</span>
-                    </div>
-                </div>
-
-                <div class="defeat-record-box" id="defeat-record-box">
-                    <span id="defeat-record-msg">Recorde: 0 pontos</span>
-                </div>
-
-                <div class="defeat-sequence-replay" id="defeat-sequence-replay">
-                    <span class="defeat-stat-label">sequência correta era:</span>
-                    <div class="replay-dots" id="replay-dots"></div>
-                </div>
-
-                <!-- Desafio 4: Botão reiniciar -->
-                <div class="defeat-buttons">
-                    <button class="ctrl-btn primary large" onclick="startGame()">
-                        <span>▶</span> JOGAR NOVAMENTE
-                    </button>
-                </div>
-            </div>
+        <div class="defeat-stats">
+          <div class="defeat-stat-block">
+            <span class="defeat-stat-label">sua pontuação</span>
+            <span class="defeat-score-value" id="defeat-score">0</span>
+          </div>
+          <div class="defeat-divider"></div>
+          <div class="defeat-stat-block">
+            <span class="defeat-stat-label">fase alcançada</span>
+            <span class="defeat-phase-value" id="defeat-phase">1</span>
+          </div>
         </div>
 
-        <div class="genius-app">
+        <div class="defeat-record-box" id="defeat-record-box">
+          <span id="defeat-record-msg">Recorde: 0 pontos</span>
+        </div>
 
-            <!-- Cabeçalho com título -->
-            <header class="header">
-                <div class="title-wrapper">
-                    <h1 class="title">GE<span class="title-accent">N</span>IUS</h1>
-                    <div class="title-line"></div>
-                </div>
-                <p class="subtitle">Jogo de Memória</p>
-            </header>
+        <div class="defeat-sequence-replay" id="defeat-sequence-replay">
+          <span class="defeat-stat-label">sequência correta era:</span>
+          <div class="replay-dots" id="replay-dots"></div>
+        </div>
 
-            <!-- Desafio 2: Sistema de pontuação | Desafio 5: Recorde (localStorage) -->
-            <div class="stats-bar" role="status" aria-live="polite">
-                <div class="stat">
-                    <div class="stat-icon">◈</div>
-                    <div class="stat-label">Pontuação</div>
-                    <div class="stat-value" id="score-display">0</div>
-                </div>
-                <div class="stat stat-center">
-                    <div class="stat-icon">◉</div>
-                    <div class="stat-label">Fase</div>
-                    <div class="stat-value phase-val" id="round-text">—</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-icon">★</div>
-                    <div class="stat-label">Recorde</div>
-                    <div class="stat-value record" id="record-display">0</div>
-                </div>
+        <!-- Desafio 4: Botão reiniciar -->
+        <div class="defeat-buttons">
+          <button class="ctrl-btn primary large" onclick="startGame()">
+            <span>▶</span> JOGAR NOVAMENTE
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="genius-app">
+      <!-- Cabeçalho com título -->
+      <header class="header">
+        <div class="title-wrapper">
+          <h1 class="title">GE<span class="title-accent">N</span>IUS</h1>
+          <div class="title-line"></div>
+        </div>
+        <p class="subtitle">Jogo de Memória</p>
+      </header>
+
+      <!-- Desafio 2: Sistema de pontuação | Desafio 5: Recorde (localStorage) -->
+      <div class="stats-bar" role="status" aria-live="polite">
+        <div class="stat">
+          <div class="stat-icon">◈</div>
+          <div class="stat-label">Pontuação</div>
+          <div class="stat-value" id="score-display">0</div>
+        </div>
+        <div class="stat stat-center">
+          <div class="stat-icon">◉</div>
+          <div class="stat-label">Fase</div>
+          <div class="stat-value phase-val" id="round-text">—</div>
+        </div>
+        <div class="stat">
+          <div class="stat-icon">★</div>
+          <div class="stat-label">Recorde</div>
+          <div class="stat-value record" id="record-display">0</div>
+        </div>
+      </div>
+
+      <!-- Área do tabuleiro com os 4 botões coloridos -->
+      <main class="board-wrapper">
+        <div class="board-glow" id="board-glow"></div>
+        <div class="board-container">
+          <!-- Quatro botões coloridos (ETAPA 1 — estrutura) -->
+          <button
+            class="btn-pad top-left"
+            id="btn-green"
+            disabled
+            aria-label="Verde"
+          >
+            <div class="pad-inner"></div>
+            <div class="pad-shine"></div>
+          </button>
+
+          <button
+            class="btn-pad top-right"
+            id="btn-red"
+            disabled
+            aria-label="Vermelho"
+          >
+            <div class="pad-inner"></div>
+            <div class="pad-shine"></div>
+          </button>
+
+          <button
+            class="btn-pad bottom-left"
+            id="btn-yellow"
+            disabled
+            aria-label="Amarelo"
+          >
+            <div class="pad-inner"></div>
+            <div class="pad-shine"></div>
+          </button>
+
+          <button
+            class="btn-pad bottom-right"
+            id="btn-blue"
+            disabled
+            aria-label="Azul"
+          >
+            <div class="pad-inner"></div>
+            <div class="pad-shine"></div>
+          </button>
+
+          <!-- Centro: logo + indicador de rodada -->
+          <div class="center-hub" aria-hidden="true">
+            <div class="hub-ring"></div>
+            <div class="hub-content">
+              <span class="hub-logo">GNS</span>
+              <span class="hub-round" id="round-display">—</span>
             </div>
+          </div>
+        </div>
+      </main>
 
-            <!-- Área do tabuleiro com os 4 botões coloridos -->
-            <main class="board-wrapper">
-                <div class="board-glow" id="board-glow"></div>
-                <div class="board-container">
+      <!-- Área de mensagens (ETAPA 1) -->
+      <section class="status-area">
+        <div class="message-box">
+          <p
+            class="message info"
+            id="message"
+            role="alert"
+            aria-live="assertive"
+          >
+            Pressione INICIAR para jogar
+          </p>
+        </div>
 
-                    <!-- Quatro botões coloridos (ETAPA 1 — estrutura) -->
-                    <button class="btn-pad top-left" id="btn-green" disabled aria-label="Verde">
-                        <div class="pad-inner"></div>
-                        <div class="pad-shine"></div>
-                    </button>
+        <div class="sequence-preview" id="sequence-preview">
+          <div class="preview-header">
+            <span class="preview-title">Sequência</span>
+            <span class="preview-tag" id="difficulty-display">Médio</span>
+          </div>
+          <div class="preview-list" id="preview-list"></div>
+          <div class="preview-note" id="medium-counter" style="display: none">
+            Sequências restantes: <strong id="sequence-views-left">5</strong>
+          </div>
+        </div>
 
-                    <button class="btn-pad top-right" id="btn-red" disabled aria-label="Vermelho">
-                        <div class="pad-inner"></div>
-                        <div class="pad-shine"></div>
-                    </button>
+        <!-- Pontos visuais de progresso da sequência -->
+        <div class="score-dots" id="score-dots" aria-hidden="true"></div>
 
-                    <button class="btn-pad bottom-left" id="btn-yellow" disabled aria-label="Amarelo">
-                        <div class="pad-inner"></div>
-                        <div class="pad-shine"></div>
-                    </button>
+        <!-- Dica de teclado -->
+        <div class="keyboard-hint" id="keyboard-hint" style="display: none">
+          <span
+            >Teclado: <kbd>G</kbd> <kbd>R</kbd> <kbd>Y</kbd> <kbd>B</kbd></span
+          >
+        </div>
+      </section>
 
-                    <button class="btn-pad bottom-right" id="btn-blue" disabled aria-label="Azul">
-                        <div class="pad-inner"></div>
-                        <div class="pad-shine"></div>
-                    </button>
+      <!-- Botão iniciar (ETAPA 1) + Desafio 4: Botão reiniciar -->
+      <div class="difficulty-panel">
+        <div class="difficulty-top">
+          <span class="difficulty-label">Modo de Dificuldade</span>
+          <span class="difficulty-mode" id="difficulty-status">Médio</span>
+        </div>
+        <div class="difficulty-options">
+          <button
+            class="difficulty-card"
+            data-difficulty="easy"
+            type="button"
+            aria-pressed="false"
+          >
+            <strong>Fácil</strong>
+            <small>Sequência visível sempre</small>
+          </button>
+          <button
+            class="difficulty-card selected"
+            data-difficulty="medium"
+            type="button"
+            aria-pressed="true"
+          >
+            <strong>Médio</strong>
+            <small>5 visualizações por partida</small>
+          </button>
+          <button
+            class="difficulty-card"
+            data-difficulty="hard"
+            type="button"
+            aria-pressed="false"
+          >
+            <strong>Difícil</strong>
+            <small>Sem ajuda visual</small>
+          </button>
+        </div>
+      </div>
 
-                    <!-- Centro: logo + indicador de rodada -->
-                    <div class="center-hub" aria-hidden="true">
-                        <div class="hub-ring"></div>
-                        <div class="hub-content">
-                            <span class="hub-logo">GNS</span>
-                            <span class="hub-round" id="round-display">—</span>
-                        </div>
-                    </div>
-                </div>
-            </main>
+      <div class="controls">
+        <button class="ctrl-btn primary" id="start-btn" onclick="startGame()">
+          <span class="btn-icon">▶</span> INICIAR
+        </button>
+        <button
+          class="ctrl-btn secondary"
+          id="restart-btn"
+          onclick="startGame()"
+          style="display: none"
+        >
+          <span class="btn-icon">↺</span> REINICIAR
+        </button>
+      </div>
 
-            <!-- Área de mensagens (ETAPA 1) -->
-            <section class="status-area">
-                <div class="message-box">
-                    <p class="message info" id="message" role="alert" aria-live="assertive">
-                        Pressione INICIAR para jogar
-                    </p>
-                </div>
+      <!-- Rodapé com info de nível de dificuldade -->
+      <footer
+        class="speed-indicator"
+        id="speed-indicator"
+        style="display: none"
+      >
+        <span class="speed-label">Velocidade</span>
+        <div class="speed-bar">
+          <div class="speed-fill" id="speed-fill"></div>
+        </div>
+        <span class="speed-text" id="speed-text">Normal</span>
+      </footer>
+    </div>
+    <!-- .genius-app -->
 
-                <div class="sequence-preview" id="sequence-preview">
-                    <div class="preview-header">
-                        <span class="preview-title">Sequência</span>
-                        <span class="preview-tag" id="difficulty-display">Médio</span>
-                    </div>
-                    <div class="preview-list" id="preview-list"></div>
-                    <div class="preview-note" id="medium-counter" style="display:none">
-                        Sequências restantes: <strong id="sequence-views-left">5</strong>
-                    </div>
-                </div>
+    <script src="js/script.js"></script>
 
-                <!-- Pontos visuais de progresso da sequência -->
-                <div class="score-dots" id="score-dots" aria-hidden="true"></div>
+    <!-- Firebase SDK -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+      import {
+        getDatabase,
+        ref,
+        set,
+        onValue,
+        remove,
+        update,
+      } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-database.js";
 
-                <!-- Dica de teclado -->
-                <div class="keyboard-hint" id="keyboard-hint" style="display:none">
-                    <span>Teclado: <kbd>G</kbd> <kbd>R</kbd> <kbd>Y</kbd> <kbd>B</kbd></span>
-                </div>
-            </section>
+      // Configuração do Firebase
+      const firebaseConfig = {
+        apiKey: "AIzaSyCJaQbb8H9Qpyc-UBD04LS9EKRgRacQ9mM",
+        authDomain: "jogo-genius.firebaseapp.com",
+        projectId: "jogo-genius",
+        storageBucket: "jogo-genius.firebasestorage.app",
+        messagingSenderId: "559540942316",
+        appId: "1:559540942316:web:ae54c81761fe9e5914fcc9",
+        databaseURL: "https://jogo-genius-default-rtdb.firebaseio.com",
+      };
 
-            <!-- Botão iniciar (ETAPA 1) + Desafio 4: Botão reiniciar -->
-            <div class="difficulty-panel">
-                <div class="difficulty-top">
-                    <span class="difficulty-label">Modo de Dificuldade</span>
-                    <span class="difficulty-mode" id="difficulty-status">Médio</span>
-                </div>
-                <div class="difficulty-options">
-                    <button class="difficulty-card" data-difficulty="easy" type="button" aria-pressed="false">
-                        <strong>Fácil</strong>
-                        <small>Sequência visível sempre</small>
-                    </button>
-                    <button class="difficulty-card selected" data-difficulty="medium" type="button" aria-pressed="true">
-                        <strong>Médio</strong>
-                        <small>5 visualizações por partida</small>
-                    </button>
-                    <button class="difficulty-card" data-difficulty="hard" type="button" aria-pressed="false">
-                        <strong>Difícil</strong>
-                        <small>Sem ajuda visual</small>
-                    </button>
-                </div>
-            </div>
+      // Inicializa Firebase
+      const app = initializeApp(firebaseConfig);
+      const database = getDatabase(app);
 
-            <div class="controls">
-                <button class="ctrl-btn primary" id="start-btn" onclick="startGame()">
-                    <span class="btn-icon">▶</span> INICIAR
-                </button>
-                <button class="ctrl-btn secondary" id="restart-btn" onclick="startGame()" style="display:none">
-                    <span class="btn-icon">↺</span> REINICIAR
-                </button>
-            </div>
+      // Expõe Firebase globalmente
+      window.firebaseApp = app;
+      window.firebaseDatabase = database;
+      window.firebaseRef = ref;
+      window.firebaseSet = set;
+      window.firebaseOnValue = onValue;
+      window.firebaseRemove = remove;
+      window.firebaseUpdate = update;
+    </script>
 
-            <!-- Rodapé com info de nível de dificuldade -->
-            <footer class="speed-indicator" id="speed-indicator" style="display:none">
-                <span class="speed-label">Velocidade</span>
-                <div class="speed-bar">
-                    <div class="speed-fill" id="speed-fill"></div>
-                </div>
-                <span class="speed-text" id="speed-text">Normal</span>
-            </footer>
-
-        </div><!-- .genius-app -->
-
-        <script src="js/script.js"></script>
-    </body>
+    <script src="js/multiplayer.js"></script>
+  </body>
 </html>

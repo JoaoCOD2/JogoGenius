@@ -133,6 +133,8 @@ function playSuccessSound() {
    Uso de arrays e variáveis para controlar o jogo
 ================================================================ */
 
+let currentGameMode = 'single'; // 'single' ou 'multi'
+
 let sequence = [];   // Array: sequência gerada pelo jogo
 let playerSeq = [];   // Array: sequência digitada pelo jogador
 let round = 0;    // Número da rodada atual
@@ -416,6 +418,12 @@ async function mostrarSequencia() {
 
 // Processa o clique do jogador em um botão colorido (ETAPA 3)
 function handleColorClick(cor) {
+    // Se está em modo multiplayer, delega ao módulo multiplayer
+    if (currentGameMode && currentGameMode === 'multi' && multiplayerState.isActive) {
+        handleMultiplayerColorClick(cor);
+        return;
+    }
+
     if (!accepting || !gameActive) return;
 
     // Feedback visual e sonoro imediato do jogador
