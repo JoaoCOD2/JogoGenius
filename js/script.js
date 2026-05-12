@@ -149,7 +149,7 @@ let multiplayerState = {
     eliminated: null,
     isActive: false,
     waitingTimeoutId: null,
-    listeners: [],
+     listeners: [],
     lastPlayedSequenceLength: 0
 };
 
