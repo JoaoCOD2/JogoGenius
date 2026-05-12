@@ -720,3 +720,19 @@ document.addEventListener('keydown', (e) => {
         closeAllModals();
     }
 });
+
+// Atualizar pontos de progresso multiplayer
+function updateMultiplayerDots() {
+  const container = document.getElementById('score-dots');
+  if (!container) return;
+
+  container.innerHTML = '';
+  
+  if (multiplayerState.sequence && multiplayerState.sequence.length > 0) {
+    multiplayerState.sequence.forEach(color => {
+      const dot = document.createElement('div');
+      dot.className = `dot ${color}`;
+      container.appendChild(dot);
+    });
+  }
+}
