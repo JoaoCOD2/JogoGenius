@@ -590,16 +590,8 @@ function endMultiplayerGame(roomId, eliminatedPlayer) {
   }
 
   setTimeout(() => {
-    leaveMultiplayer();
-    openModal('gameSelectModal');
+    setMessage('A partida acabou. A sala permanece aberta para novos jogos.', 'info');
   }, 3500);
-
-  // Limpa sala do Firebase após 6 segundos
-  setTimeout(() => {
-    window.firebaseRemove(
-      window.firebaseRef(window.firebaseDatabase, `rooms/${roomId}`)
-    );
-  }, 6000);
 }
 
 // ================================================================
